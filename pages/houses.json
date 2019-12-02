@@ -1,0 +1,20 @@
+[
+  {
+    "id": "29342937492abe2ab",
+    "picture": "/static/img/houses/1.jpg",
+    "type": "Entire house",
+    "town": "Ostuni",
+    "title": "Beautiful flat in Ostuni!",
+    "rating": 4.93,
+    "reviewsCount": 198
+  },
+  {
+    "id": "2937429374923skhdfa",
+    "picture": "/static/img/houses/2.jpg",
+    "type": "Entire house",
+    "town": "Isla Mujeres",
+    "title": "The World Famous Seashell House ~ Casa Caracol",
+    "rating": 4.77,
+    "reviewsCojunt": 246
+  }
+]
