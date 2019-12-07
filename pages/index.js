@@ -1,13 +1,11 @@
 import houses from './houses.json'
 import House from '../components/House'
+import Layout from '../components/Layout'
 
 
-
-const Index = () => (
+const Content = () => (
   <div>
-      
     <h2>Places to stay</h2>
-
     <div className='houses'>
       {houses.map((house, index) => {
           return (
@@ -25,5 +23,11 @@ const Index = () => (
         `}</style>
   </div>
 )
+
+const Index = () => (
+  <Layout>
+      <Content />
+  </Layout>
+);
 
 export default Index
