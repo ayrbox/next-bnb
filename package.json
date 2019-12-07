@@ -4,8 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@zeit/next-css": "^1.0.1",
     "next": "^9.1.4",
     "react": "^16.12.0",
+    "react-day-picker": "^7.4.0",
     "react-dom": "^16.12.0"
   },
   "scripts": {
