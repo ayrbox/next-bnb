@@ -1,7 +1,6 @@
-import houses from './houses.json'
-import House from '../components/House'
-import Layout from '../components/Layout'
-
+import houses from './houses.json';
+import House from '../components/House';
+import Layout from '../components/Layout';
 
 const Content = () => (
   <div>
