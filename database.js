@@ -1,4 +1,6 @@
-export const user = 'next';
-export const password = 'next';
-export const host = 'localhost';
-export const database = 'nextbnb';
+module.exports = {
+    user: 'next',
+    password: 'next',
+    host: 'localhost',
+    database: 'nextbnb',
+}
