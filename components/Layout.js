@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useStoreState, useStoreActions } from 'easy-peasy';
+
 import Header from "./Header";
 import LoginModal from "./LoginModal";
 import RegistrationModal from "./RegistrationModal";
 
 const Layout = props => {
-  const [showLoginModal, setShowLoginModal] = useState(true);
-  const [showRegistrationModal, setShowRegistraionModal] = useState(true);
+  const showLoginModal = useStoreState(state => state.modals.showLoginModal);
+  const showRegistrationModal = useStoreState(state => state.modals.showRegistrationModal);
+  const setHideModals = useStoreActions(actions => actions.modals.setHideModals)
+
   return (
     <>
       <Header />
@@ -58,9 +62,9 @@ const Layout = props => {
         }
       `}</style>
 
-      {showLoginModal && <LoginModal close={() => setShowLoginModal(false)} />}
+      {showLoginModal && <LoginModal close={setHideModals} />}
       {showRegistrationModal && (
-        <RegistrationModal close={() => setShowRegistraionModal(false)} />
+        <RegistrationModal close={setHideModals} />
       )}
     </>
   );

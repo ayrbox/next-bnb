@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import { useStoreActions } from 'easy-peasy';
+
 import houses from '../houses.json'
 import Layout from '../../components/Layout';
 import DateRangePicker from '../../components/DateRangePicker'
@@ -18,10 +20,12 @@ const calcNumberOfNightsBetweenDates = (startDate, endDate) => {
 }
 
 const House = (props) => {
+  const setShowLoginModal = useStoreActions(
+    actions => actions.modals.setShowLoginModal
+  );
+
   const [dateChosen, setDateChosen] = useState(false);
   const [numberOfNightsBetweenDates, setNumberOfNightsBetweenDates] = useState(0)
-
-  
 
   return (
     <Layout>
@@ -56,7 +60,12 @@ const House = (props) => {
                 <p>
                   ${(numberOfNightsBetweenDates * props.house.price).toFixed(2)}
                 </p>
-                <button className="reserve">Reserve</button>
+                <button
+                  className="reserve"
+                  onClick={setShowLoginModal}
+                >
+                  Reserve
+                </button>
               </div>
             )}
           </aside>

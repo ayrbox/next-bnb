@@ -1,68 +1,76 @@
 import Link from 'next/link';
+import { useStoreActions } from 'easy-peasy';
 
-const Header = () => (
-  <div className='nav-container'>
-    <Link href='/'>
-      <a>
-        <img src='/static/img/logo.jpg' alt='' className="logo-image" />
-      </a>
-    </Link>
+const Header = () => {
+  
+  const setShowLoginModal = useStoreActions(
+    actions => actions.modals.setShowLoginModal
+  );
 
-    <nav>
-      <ul>
-        <li>
-          <Link href='/register'>
-            <a>Sign up</a>
-          </Link>
-        </li>
-        <li>
-          <Link href='/login'>
-            <a>Log in</a>
-          </Link>
-        </li>
-      </ul>
-    </nav>
+  const setShowRegistrationModal = useStoreActions(
+    actions => actions.modals.setShowRegistrationModal
+  );
+  
+  return (
+    <div className='nav-container'>
+      <Link href='/'>
+        <a>
+          <img src='/static/img/logo.jpg' alt='' className="logo-image" />
+        </a>
+      </Link>
 
-    <style jsx>{`
-      ul {
-        margin: 0;
-        padding: 0;
-      }
+      <nav>
+        <ul>
+          <li>
+             <a href='#' onClick={() => setShowRegistrationModal()}>Sign up</a>
+          </li>
+          <li>
+             <a href='#' onClick={() => setShowLoginModal()}>Log in</a>
+          </li>
+        </ul>
+      </nav>
 
-      li {
-        display: block;
-        float: left;
-      }
+      <style jsx>{`
+        ul {
+          margin: 0;
+          padding: 0;
+        }
 
-      a {
-        text-decoration: none;
-        display: block;
-        margin-right: 15px;
-        color: #333;
-      }
+        li {
+          display: block;
+          float: left;
+        }
 
-      nav a {
-        padding: 1em 0.5em;
-      }
+        a {
+          text-decoration: none;
+          display: block;
+          margin-right: 15px;
+          color: #333;
+        }
 
-      .nav-container {
-        border-bottom: 1px solid #eee;
-        height: 50px;
-      }
+        nav a {
+          padding: 1em 0.5em;
+        }
 
-      img {
-        float: left;
-      }
-
-      ul {
-        float: right;
-      }
-
-      .logo-image {
+        .nav-container {
+          border-bottom: 1px solid #eee;
           height: 50px;
-      }
-    `}</style>
-  </div>
-);
+        }
+
+        img {
+          float: left;
+        }
+
+        ul {
+          float: right;
+        }
+
+        .logo-image {
+            height: 50px;
+        }
+      `}</style>
+    </div>
+  );
+}
 
 export default Header;
