@@ -41,4 +41,4 @@ User.prototype.isPasswordValid = async function(password) {
 }
 
 exports.User = User;
-// exports.sequelize = sequelize;
+exports.sequelize = sequelize;
