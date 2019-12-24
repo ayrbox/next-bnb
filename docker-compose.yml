@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:9.2-alpine
+    volumes:
+      - nextpgdb:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=nextbnb
+      - POSTGRES_USER=next
+      - POSTGRES_PASSWORD=next
+    healthcheck:
+      test: ["CMD", "psql","-U","vagrant","-d","postgres","-c","SELECT 1;"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  nextpgdb:
