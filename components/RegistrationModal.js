@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useStoreActions } from 'easy-peasy';
 
 import Modal from "./Modal";
 
@@ -8,23 +9,35 @@ export default props => {
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
 
-  const submit = async () => {
-    const response = await axios.post('/api/auth/register', {
-      email, 
-      password,
-      passwordConfirmation,
-    });
-    console.log('Response', response);
+  const setUser = useStoreActions(actions => actions.user.setUser);
+  const setHideModals = useStoreActions(actions => actions.modals.setHideModals);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post('/api/auth/register', {
+        email, 
+        password,
+        passwordConfirmation,
+      });
+      if(res.data.state === 'error') {
+        alert(res.data.message);
+        return;
+      }
+      setUser(email);
+      setHideModals();
+    } catch(error) {
+      alert(error.response.data.message);
+      return;
+    }
   }
   
   return (
     <Modal close={props.close}>
       <h2>Sign up</h2>
       <div>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}>
+        <form onSubmit={handleSubmit}>
           <input
             id="email"
             type="email"
