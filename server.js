@@ -7,6 +7,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require("body-parser");
 
 const sequelize = require("./database");
+const Op = require('sequelize').Op;
 const User = require("./models/user");
 const House = require('./models/house');
 const Review = require('./models/review');
@@ -18,6 +19,16 @@ const dev = process.env.NODE_ENV !== "production";
 const nextApp = next({ dev });
 
 const handler = nextApp.getRequestHandler();
+
+const getDatesBetweenDates = (startDate, endDate) => {
+  let dates = [];
+  while (startDate < endDate) {
+    dates = [...dates, new Date(startDate)];
+    startDate.setDate(startDate.getDate() + 1);
+  }
+  dates = [...dates, endDate];
+  return dates;
+};
 
 passport.use(
   new LocalStrategy(
@@ -232,6 +243,36 @@ nextApp.prepare().then(() => {
         res.end(JSON.stringify({ status: 'success', message: 'ok' }))
       });
     })
+  });
+
+  server.post('/api/houses/booked', async (req, res) => {
+    const { houseId } = req.body; 
+
+    const results = await Booking.findAll({
+      where: {
+        houseId,
+        endDate: {
+          [Op.gte]: new Date(),
+        }
+      } 
+    });
+
+    let bookedDates = [];
+    for (const result of results) {
+      const dates = getDatesBetweenDates(
+        new Date(result.startDate),
+        new Date(result.endDate),
+      );
+      bookedDates.push(dates);
+    };
+
+    bookedDates = [...new Set([...bookedDates])]
+    res.json({
+      status: 'success',
+      message: 'ok',
+      dates: bookedDates,
+    });
+
   });
 
   server.all("*", (req, res) => {
