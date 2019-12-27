@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import { useStoreActions } from 'easy-peasy';
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import fetch from 'isomorphic-unfetch';
 
 import Layout from '../../components/Layout';
 import DateRangePicker from '../../components/DateRangePicker'
+import axios from 'axios';
+
 
 const calcNumberOfNightsBetweenDates = (startDate, endDate) => {
   const start = new Date(startDate) //clone
@@ -26,6 +28,34 @@ const House = (props) => {
 
   const [dateChosen, setDateChosen] = useState(false);
   const [numberOfNightsBetweenDates, setNumberOfNightsBetweenDates] = useState(0)
+
+  const user = useStoreState(state => state.user.user);
+
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+
+
+  const handleReserve = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/api/houses/reserve', {
+        houseId: props.house.id,
+        startDate,
+        endDate,
+      });
+
+      if(res.data.status === 'error') {
+        alert(res.data.message);
+        return;
+      }
+
+      console.log(res.data);
+
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
 
   return (
     <Layout>
@@ -62,6 +92,8 @@ const House = (props) => {
                 calcNumberOfNightsBetweenDates(startDate, endDate)
               )
               setDateChosen(true);
+              setStartDate(startDate);
+              setEndDate(endDate);
             }} />
             {dateChosen && (
               <div>
@@ -71,12 +103,21 @@ const House = (props) => {
                 <p>
                   ${(numberOfNightsBetweenDates * props.house.price).toFixed(2)}
                 </p>
-                <button
-                  className="reserve"
-                  onClick={setShowLoginModal}
-                >
-                  Reserve
-                </button>
+                {user ? (
+                  <button
+                    className="reserve"
+                    onClick={handleReserve}
+                  >
+                    Reserve
+                  </button>
+                ): (
+                  <button
+                    className="reserve"
+                    onClick={setShowLoginModal}
+                  >
+                    Log in to reserve
+                  </button>
+                )}
               </div>
             )}
           </aside>

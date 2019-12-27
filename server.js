@@ -6,10 +6,12 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require("body-parser");
 
+const sequelize = require("./database");
 const User = require("./models/user");
 const House = require('./models/house');
 const Review = require('./models/review');
-const sequelize = require("./database");
+const Booking = require('./models/booking');
+
 
 const port = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -62,11 +64,10 @@ passport.deserializeUser((email, done) => {
 User.sync({ alter: true });
 House.sync({ alter: true });
 Review.sync({ alter: true });
+Booking.sync({ alter: true });
 
 nextApp.prepare().then(() => {
-  const server = express();
-
-  const sessionStore = new SequelizeStore({
+  const server = express(); const sessionStore = new SequelizeStore({
     db: sequelize
   });
   // sessionStore.sync();
@@ -213,6 +214,24 @@ nextApp.prepare().then(() => {
         res.end(JSON.stringify({ message: 'Not found'}));
       }
     });
+  });
+
+  server.post('/api/houses/reserve', (req, res) => {
+    const userEmail = req.session.passport.user;
+    User.findOne({ where: { email: userEmail }}).then(user => {
+      const { houseId, startDate, endDate } = req.body;
+      Booking.create({
+        houseId,
+        userId: user.id,
+        startDate,
+        endDate,
+      }).then(() => {
+        res.writeHead(201, {
+          'Content-Type': 'application/json',
+        });
+        res.end(JSON.stringify({ status: 'success', message: 'ok' }))
+      });
+    })
   });
 
   server.all("*", (req, res) => {
