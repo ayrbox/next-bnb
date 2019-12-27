@@ -30,6 +30,21 @@ const getDatesBetweenDates = (startDate, endDate) => {
   return dates;
 };
 
+const canBookThoseDates = async (houseId, startDate, endDate) => {
+  const results = await Booking.findAll({
+    where: {
+      houseId,
+      startDate: {
+        [Op.lte]: new Date(endDate),
+      },
+      endDate: {
+        [Op.gte]: new Date(startDate),
+      } 
+    }
+  });
+  return !(results.length > 0);
+}
+
 passport.use(
   new LocalStrategy(
     {
@@ -273,6 +288,19 @@ nextApp.prepare().then(() => {
       dates: bookedDates,
     });
 
+  });
+
+
+  server.post('/api/houses/check', async (req, res) => {
+    const { startDate, endDate, houseId } = req.body;
+    let message = 'free';
+    if(!(await canBookThoseDates(houseId, startDate, endDate))) {
+      message = 'busy';
+    }
+    res.json({
+      status: 'success',
+      message,
+    });
   });
 
   server.all("*", (req, res) => {
