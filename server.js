@@ -242,10 +242,30 @@ nextApp.prepare().then(() => {
     });
   });
 
-  server.post('/api/houses/reserve', (req, res) => {
+  server.post('/api/houses/reserve', async (req, res) => {
+
+    if (!req.session.passport) {
+      res.writeHead(403, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({
+        status: 'error',
+        message: 'Unauthorized',
+      }));
+      return;
+    }
+
+    const { houseId, startDate, endDate } = req.body;
+    if(!(await canBookThoseDates(houseId, startDate, endDate))) {
+      res.writeHead(500, {
+        'Content-Type': 'application/json',
+      });
+      res.end(JSON.stringify({ status: 'error', message: 'House is already booked' }));
+      return;
+    }
+
     const userEmail = req.session.passport.user;
     User.findOne({ where: { email: userEmail }}).then(user => {
-      const { houseId, startDate, endDate } = req.body;
       Booking.create({
         houseId,
         userId: user.id,
@@ -278,7 +298,8 @@ nextApp.prepare().then(() => {
         new Date(result.startDate),
         new Date(result.endDate),
       );
-      bookedDates.push(dates);
+      // bookedDates.push(dates);
+      bookedDates = [...bookedDates, ...dates]
     };
 
     bookedDates = [...new Set([...bookedDates])]

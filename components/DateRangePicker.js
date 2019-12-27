@@ -33,9 +33,11 @@ const numberOfNightsBetweenDates = (startDate, endDate) => {
   return dayCount;
 };
 
-export default ({ datesChanged }) => {
+export default ({ datesChanged, bookedDates }) => {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(tomorrow);
+
+  const disabledDates = bookedDates.map(d => new Date(d));
 
   return (
     <div className="date-range-picker-container">
@@ -49,6 +51,7 @@ export default ({ datesChanged }) => {
           dayPickerProps={{
             modifiers: {
               disabled: [
+                ...disabledDates,
                 today,
                 {
                   before: today
@@ -76,9 +79,12 @@ export default ({ datesChanged }) => {
           placeholder={`${dateFnsFormat(endDate, format)}`}
           dayPickerProps={{
             modifiers: {
-              disabled: {
-                before: startDate
-              }
+              disabled: [
+                ...disabledDates,
+                {
+                  before: startDate
+                },
+              ] 
             }
           }}
           onDayChange={day => {

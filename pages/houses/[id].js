@@ -21,6 +21,41 @@ const calcNumberOfNightsBetweenDates = (startDate, endDate) => {
   return dayCount
 }
 
+const getBookedDates = async(houseId) => {
+  try {
+    const res = await axios.post('http://localhost:3000/api/houses/booked', { houseId });
+    if (res.data.status === 'error') {
+      alert(res.data.message);
+      return;
+    }
+    return res.data.dates;
+  } catch(error) {
+    console.error(error);
+    return;
+  }
+};
+
+const canReserve = async (houseId, startDate, endDate) => {
+  try {
+    const res = await axios.post('http://localhost:3000/api/houses/check', {
+      houseId,
+      startDate,
+      endDate,
+    });
+
+    if (res.data.status === 'error') {
+      alert(res.data.message);
+      return;
+    }
+
+    if (res.data.message === 'busy') return false;
+    return true;
+  } catch(error) {
+    console.error(error);
+    return;
+  }
+}
+
 const House = (props) => {
   const setShowLoginModal = useStoreActions(
     actions => actions.modals.setShowLoginModal
@@ -38,6 +73,11 @@ const House = (props) => {
   const handleReserve = async (e) => {
     e.preventDefault();
     try {
+      if (!(await canReserve(props.house.id, startDate, endDate))) {
+        alert('The date chosen are not valid');
+        return;
+      }
+
       const res = await axios.post('/api/houses/reserve', {
         houseId: props.house.id,
         startDate,
@@ -56,6 +96,7 @@ const House = (props) => {
       return;
     }
   }
+
 
   return (
     <Layout>
@@ -94,7 +135,8 @@ const House = (props) => {
               setDateChosen(true);
               setStartDate(startDate);
               setEndDate(endDate);
-            }} />
+            }}
+            bookedDates={props.bookedDates} />
             {dateChosen && (
               <div>
                 <h2>Price per night</h2>
@@ -154,7 +196,11 @@ House.getInitialProps = async ({ query }) => {
     const { id } = query;
     const res = await fetch(`http://localhost:3000/api/houses/${id}`);
     const house = await res.json();
+
+    const bookedDates = await getBookedDates(id);
+
     return {
         house,
+        bookedDates,
     };
 }
