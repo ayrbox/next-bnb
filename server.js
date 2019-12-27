@@ -6,8 +6,10 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bodyParser = require("body-parser");
 
-const User = require("./model.js").User;
-const sequelize = require("./model.js").sequelize;
+const User = require("./models/user");
+const House = require('./models/house');
+const Review = require('./models/review');
+const sequelize = require("./database");
 
 const port = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -56,6 +58,10 @@ passport.deserializeUser((email, done) => {
     done(null, user);
   });
 });
+
+User.sync({ alter: true });
+House.sync({ alter: true });
+Review.sync({ alter: true });
 
 nextApp.prepare().then(() => {
   const server = express();
