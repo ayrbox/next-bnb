@@ -1,4 +1,4 @@
-import { useState } from "react";
+import Head from 'next/head';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
 import Header from "./Header";
@@ -12,6 +12,9 @@ const Layout = props => {
 
   return (
     <>
+      <Head>
+        <script src="https://js.stripe.com/v3/"></script>
+      </Head>
       <Header />
       <main>
         {props.children}

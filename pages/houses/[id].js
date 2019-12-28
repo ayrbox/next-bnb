@@ -78,10 +78,22 @@ const House = (props) => {
         return;
       }
 
+      const sessionResponse = await axios.post('/api/stripe/session', {
+        amount: props.house.price * numberOfNightsBetweenDates
+      });
+
+      if (sessionResponse.data.status === 'error') {
+        alert(sessionResponse.data.message);
+        return;
+      }
+
+      const { sessionId, stripePublicKey } = sessionResponse.data;
+
       const res = await axios.post('/api/houses/reserve', {
         houseId: props.house.id,
         startDate,
         endDate,
+        sessionId,
       });
 
       if(res.data.status === 'error') {
@@ -89,7 +101,12 @@ const House = (props) => {
         return;
       }
 
-      console.log(res.data);
+      const stripe = Stripe(stripePublicKey);
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
+
+      console.log(reserveResponse.data, error);
 
     } catch (error) {
       console.log(error);
